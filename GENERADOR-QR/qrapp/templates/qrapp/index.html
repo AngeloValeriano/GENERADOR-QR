@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    {% load static %}
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generador de Códigos QR</title>
+    <link rel="icon" type="image/x-icon" href="{% static 'images/angelofavicon.png' %}">
+
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-image: url("{% static 'images/fondo.jpeg' %}");
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            color: #333; /* Color del texto */
+        }
+
+        .container {
+            width: 100%;
+            max-width: 500px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.9);
+        }
+
+        .app-card {
+            padding: 30px;
+            border-radius: 8px;
+            background-color: rgba(255, 255, 255, 0.95);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            color: #2c3e50; /* Color del título */
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        button {
+            width: 100%;
+            padding: 10px;
+            border: none;
+            border-radius: 5px;
+            background-color: #3498db; /* Color del botón */
+            color: #fff;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin-top: 10px; /* Añadir margen entre botones */
+        }
+
+        button:hover {
+            background-color: #2980b9; /* Color del botón al pasar el mouse */
+        }
+
+        .qr-result {
+            text-align: center;
+            margin-top: 20px;
+        }
+
+        img {
+            margin-top: 10px;
+            max-width: 100%; /* Asegura que la imagen no exceda el ancho del contenedor */
+        }
+
+        .btn-save {
+            background-color: #27ae60; /* Color para el botón de guardar */
+        }
+
+        .btn-save:hover {
+            background-color: #219653; /* Color del botón de guardar al pasar el mouse */
+        }
+
+        .btn-back {
+            background-color: #e74c3c; /* Color para el botón de retroceder */
+        }
+
+        .btn-back:hover {
+            background-color: #c0392b; /* Color del botón de retroceder al pasar el mouse */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="app-card">
+            <h1>Generador de Códigos QR</h1>
+            <form method="POST" action="{% url 'generar_qr' %}">
+                {% csrf_token %}
+                <div class="form-group">
+                    <label for="data">Ingresa el texto o URL:</label>
+                    <input type="text" id="data" name="data" required>
+                </div>
+                
+                <button type="submit" class="btn-generate">GENERAR CÓDIGO QR</button>
+            </form>
+
+            {% if img_str %}
+                <div class="qr-result">
+                    <h2>Código QR generado para: {{ data }}</h2>
+                    <img id="qrCodeImg" src="data:image/png;base64,{{ img_str }}" alt="Código QR">
+                    <button class="btn-save" onclick="downloadQR()">GUARDAR CÓDIGO QR</button>
+                    <button class="btn-back" onclick="history.back()">RETROCEDER</button>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <script>
+        function downloadQR() {
+            const qrCodeImg = document.getElementById('qrCodeImg');
+            const imgURL = qrCodeImg.src;
+            const link = document.createElement('a');
+            link.href = imgURL;
+            link.download = 'codigo_qr.png';  // Nombre del archivo a descargar
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+    </script>
+</body>
+</html>
